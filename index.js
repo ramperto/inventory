@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'production') {
 // launch our server and connect to database
 const PORT = process.env.PORT || 5000;
 //const mongodb_url = process.env.MONGODB_URL;
-const mongodb_url = mongodb://127.0.0.1/inventory;
+const mongodb_url = 'mongodb://localhost:27017/inventory';
 mongoose
 	.connect(mongodb_url, {
 		useNewUrlParser: true,
