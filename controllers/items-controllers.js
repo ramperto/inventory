@@ -10,7 +10,7 @@ const User = require('../models/user-model');
  * @desc      get all inventory items
  * @access    private
  */
-const getAllItems = async (req, res, next) => {
+/*const getAllItems = async (req, res, next) => {
 	let items;
 	try {
 		items = await Item.find();
@@ -20,7 +20,19 @@ const getAllItems = async (req, res, next) => {
 	}
 	res.json({ items: items.map((item) => item.toObject({ getters: true })) });
 };
+*/
+const getAllItems = async (req, res, next) => {
+	let items = [{
+	kode:'A3',
+	nama:'shoe',
+	jenis:'Alat bantu peraga',
+	merk:'f50',
+		stok:'75',
+		keterangan:'Excellent'
+	}];
 
+	res.json({ items: items });
+};
 /*
  * @route     POST api/items
  * @desc      create new item
