@@ -48,8 +48,12 @@ mongoose
 	})
 	.then(() => console.log('Database connected'))
 	.then(() => {
-		app.listen(PORT, () => console.log('Server is running'));
+		app.listen(PORT, () => console.log('Server is running on port ' + PORT));
 	})
 	.catch((err) => {
 		console.log(err);
 	});
+	
+//const PORT = process.env.PORT || 5000;
+//app.listen(PORT, () => console.log('Server is running on port ' + PORT));
+//app.listen(PORT, () => console.log('Server is running'));
