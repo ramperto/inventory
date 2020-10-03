@@ -7,6 +7,7 @@ jobs:
     docker:
       - image: circleci/node:latest
     steps:
+      - checkout
       - run:
           name: which branch
           command: echo ${CIRCLE_BRANCH}
@@ -31,6 +32,7 @@ jobs:
       - run:
           name: reload
           command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_DEV"
+      - run: docker run -i loadimpact/k6 run - <script.js
       - slack/notify:
           color: "#42e2f4"
           message: Sukses melakukan deploy inventory-dev pada branch $CIRCLE_BRANCH
