@@ -30,17 +30,16 @@ app.use((error, req, res, next) => {
 });
 
 // this step for real deployment
-if (process.env.NODE_ENV === 'production') {
+//if (process.env.NODE_ENV === 'production') {
 	app.use(express.static(path.join(__dirname, '/frontend/build')));
 	app.get('*', (req, res) => {
 		res.sendFile(path.join(`${__dirname}/frontend/build/index.html`));
 	});
-}
+//}
 
 // launch our server and connect to database
 const PORT = process.env.PORT || 5000;
-//const mongodb_url = process.env.MONGODB_URL;
-const mongodb_url = 'mongodb://localhost:27017/inventory';
+const mongodb_url = process.env.MONGODB_URL;
 mongoose
 	.connect(mongodb_url, {
 		useNewUrlParser: true,
@@ -49,12 +48,8 @@ mongoose
 	})
 	.then(() => console.log('Database connected'))
 	.then(() => {
-		app.listen(PORT, () => console.log('Server is running on port ' + PORT));
+		app.listen(PORT, () => console.log('Server is running'));
 	})
 	.catch((err) => {
 		console.log(err);
 	});
-	
-//const PORT = process.env.PORT || 5000;
-//app.listen(PORT, () => console.log('Server is running on port ' + PORT));
-//app.listen(PORT, () => console.log('Server is running'));
