@@ -1,7 +1,9 @@
 import http from 'k6/http';
-import { sleep } from 'k6';
+import { check } from 'k6';
 
 export default function() {
-  http.get('https://dev-inv.member.co.id');
-  sleep(1);
+  let res = http.get('https://dev-inv.member.co.id');
+  check(res, {
+      'is status 200': (r) => r.status === 200,
+  });
 }
