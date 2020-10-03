@@ -1,7 +1,124 @@
 version: 2.1
 orbs:
   node: circleci/node@3.0.0
+  slack: circleci/slack@3.4.2
+jobs:
+  development:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - run:
+          name: which branch
+          command: echo ${CIRCLE_BRANCH}
+      - run:
+          name: The GitHub username of the user who triggered the build.
+          command: echo ${CIRCLE_USERNAME}
+      - add_ssh_keys:
+          fingerprints:
+            - "3c:ad:70:5c:87:c7:65:e4:69:47:94:88:75:a2:e3:09"
+      - run:
+          name: reset code
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RESET_DEV"
+      - run:
+          name: pull code
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$PULL_DEV"
+      - run:
+          name: install
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$INSTALL_DEV"
+      # - run:
+      #     name: build
+      #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$BUILD_DEV"
+      - run:
+          name: reload
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_DEV"
+      - slack/notify:
+          color: "#42e2f4"
+          message: Sukses melakukan deploy inventory-dev ($CIRCLE_SHA1) pada branch $CIRCLE_BRANCH
+      - slack/status:
+          fail_only: true
+
+  staging:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - run:
+          name: which branch
+          command: echo ${CIRCLE_BRANCH}
+      - run:
+          name: The GitHub username of the user who triggered the build.
+          command: echo ${CIRCLE_USERNAME}
+      - add_ssh_keys:
+          fingerprints:
+            - "94:43:d9:0d:b0:1d:42:35:96:43:b6:d7:cd:66:08:a4"
+      - run:
+          name: reset code
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RESET_STAG"
+      - run:
+          name: pull code
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$PULL_STAG"
+      - run:
+          name: install
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$INSTALL_STAG"
+      - run:
+          name: build
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$BUILD_STAG"
+      - run:
+          name: reload
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_STAG"
+      - slack/notify:
+          color: "#42e2f4"
+          message: Success deploying manggis-api on staging environment
+      - slack/status:
+          fail_only: true
+
+  production:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - run:
+          name: which branch
+          command: echo ${CIRCLE_BRANCH}
+      - run:
+          name: The GitHub username of the user who triggered the build.
+          command: echo ${CIRCLE_USERNAME}
+      - add_ssh_keys:
+          fingerprints:
+            - "52:ed:71:80:b4:a6:e0:f8:c8:37:b2:14:d7:d3:34:ac"
+      - run:
+          name: reset code
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$RESET_PROD"
+      - run:
+          name: pull code
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$PULL_PROD"
+      - run:
+          name: install
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$INSTALL_PROD"
+      - run:
+          name: build
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$BUILD_PROD"
+      - run:
+          name: reload
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$RELOAD_PROD"
+      - slack/notify:
+          color: "#42e2f4"
+          message: Success deploying manggis-api on production environment
+      - slack/status:
+          fail_only: true
+
 workflows:
-  node-tests:
+  version: 2.1
+  workflow:
     jobs:
-      - node/test
+    - development:
+        filters:
+          branches:
+            only: development
+    - staging:
+        filters:
+          branches:
+            only: staging
+    # - production:
+    #     filters:
+    #       branches:
+    #         only: master
+
