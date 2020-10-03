@@ -23,24 +23,24 @@ jobs:
       - run:
           name: The GitHub username of the user who triggered the build.
           command: echo ${CIRCLE_USERNAME}
-      # - add_ssh_keys:
-      #     fingerprints:
-      #       - "3c:ad:70:5c:87:c7:65:e4:69:47:94:88:75:a2:e3:09"
-      # - run:
-      #     name: reset code
-      #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RESET_DEV"
-      # - run:
-      #     name: pull code
-      #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$PULL_DEV"
-      # - run:
-      #     name: install
-      #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$INSTALL_DEV"
+      - add_ssh_keys:
+          fingerprints:
+            - "3c:ad:70:5c:87:c7:65:e4:69:47:94:88:75:a2:e3:09"
+      - run:
+          name: reset code
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RESET_DEV"
+      - run:
+          name: pull code
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$PULL_DEV"
+      - run:
+          name: install
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$INSTALL_DEV"
       # - run:
       #     name: build
       #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$BUILD_DEV"
-      # - run:
-      #     name: reload
-      #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_DEV"
+      - run:
+          name: reload
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_DEV"
       - run:
           name: testing host
           command: k6 run script.js
