@@ -8,31 +8,41 @@ jobs:
       - image: circleci/node:latest
     steps:
       - checkout
+      - run: whoami
+      - run:
+          name: Install k6 loadimpact
+          command: |
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
+            echo "deb https://dl.bintray.com/loadimpact/deb stable main" | sudo tee -a /etc/apt/sources.list
+            sudo apt-get update
+            sudo apt-get install k6
       - run:
           name: which branch
           command: echo ${CIRCLE_BRANCH}
       - run:
           name: The GitHub username of the user who triggered the build.
           command: echo ${CIRCLE_USERNAME}
-      - add_ssh_keys:
-          fingerprints:
-            - "3c:ad:70:5c:87:c7:65:e4:69:47:94:88:75:a2:e3:09"
-      - run:
-          name: reset code
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RESET_DEV"
-      - run:
-          name: pull code
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$PULL_DEV"
-      - run:
-          name: install
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$INSTALL_DEV"
+      # - add_ssh_keys:
+      #     fingerprints:
+      #       - "3c:ad:70:5c:87:c7:65:e4:69:47:94:88:75:a2:e3:09"
+      # - run:
+      #     name: reset code
+      #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RESET_DEV"
+      # - run:
+      #     name: pull code
+      #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$PULL_DEV"
+      # - run:
+      #     name: install
+      #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$INSTALL_DEV"
       # - run:
       #     name: build
       #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$BUILD_DEV"
+      # - run:
+      #     name: reload
+      #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_DEV"
       - run:
-          name: reload
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_DEV"
-      - run: docker run -i loadimpact/k6 run - <script.js
+          name: testing host
+          command: k6 run script.js
       - slack/notify:
           color: "#42e2f4"
           message: Sukses melakukan deploy inventory-dev pada branch $CIRCLE_BRANCH
