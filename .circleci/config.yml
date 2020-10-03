@@ -113,10 +113,10 @@ workflows:
         filters:
           branches:
             only: development
-    - staging:
-        filters:
-          branches:
-            only: staging
+    # - staging:
+    #     filters:
+    #       branches:
+    #         only: staging
     # - production:
     #     filters:
     #       branches:
