@@ -18,19 +18,22 @@ jobs:
             - "3c:ad:70:5c:87:c7:65:e4:69:47:94:88:75:a2:e3:09"
       - run:
           name: reset code
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RESET_DEV"
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RESET"
       - run:
           name: pull code
           command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$PULL_DEV"
       - run:
           name: install
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$INSTALL_DEV"
-      # - run:
-      #     name: build
-      #     command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$BUILD_DEV"
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$INSTALL"
+      - run:
+          name: install FrontEnd
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$INSTALL_FE"
+      - run:
+          name: build frontend
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$BUILD_FE"
       - run:
           name: reload
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_DEV"
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD"
       - slack/notify:
           color: "#42e2f4"
           message: Sukses melakukan deploy pada branch $CIRCLE_BRANCH
@@ -71,25 +74,50 @@ jobs:
           command: echo ${CIRCLE_USERNAME}
       - add_ssh_keys:
           fingerprints:
-            - "94:43:d9:0d:b0:1d:42:35:96:43:b6:d7:cd:66:08:a4"
+            - "3c:ad:70:5c:87:c7:65:e4:69:47:94:88:75:a2:e3:09"
       - run:
           name: reset code
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RESET_STAG"
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_STAG "$RESET"
       - run:
           name: pull code
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$PULL_STAG"
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_STAG "$PULL_STAG"
       - run:
           name: install
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$INSTALL_STAG"
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_STAG "$INSTALL"
       - run:
-          name: build
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$BUILD_STAG"
+          name: install FrontEnd
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_STAG "$INSTALL_FE"
+      - run:
+          name: build frontend
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_STAG "$BUILD_FE"
       - run:
           name: reload
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_STAG"
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_STAG "$RELOAD"
       - slack/notify:
           color: "#42e2f4"
-          message: Success deploying manggis-api on staging environment
+          message: Sukses melakukan deploy pada branch $CIRCLE_BRANCH
+      - slack/status:
+          fail_only: true
+
+  test-stag:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: Install k6 loadimpact
+          command: |
+            sudo apt-get install apt-transport-https -y
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
+            echo "deb https://dl.bintray.com/loadimpact/deb stable main" | sudo tee -a /etc/apt/sources.list
+            sudo apt-get update
+            sudo apt-get install k6
+      - run:
+          name: testing host
+          command: k6 run stag_script.js
+      - slack/notify:
+          color: "#42e2f4"
+          message: Sukses testing https://stg-inv.member.co.id
       - slack/status:
           fail_only: true
 
@@ -105,25 +133,50 @@ jobs:
           command: echo ${CIRCLE_USERNAME}
       - add_ssh_keys:
           fingerprints:
-            - "52:ed:71:80:b4:a6:e0:f8:c8:37:b2:14:d7:d3:34:ac"
+            - "3c:ad:70:5c:87:c7:65:e4:69:47:94:88:75:a2:e3:09"
       - run:
           name: reset code
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$RESET_PROD"
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$RESET"
       - run:
           name: pull code
           command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$PULL_PROD"
       - run:
           name: install
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$INSTALL_PROD"
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$INSTALL"
       - run:
-          name: build
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$BUILD_PROD"
+          name: install FrontEnd
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$INSTALL_FE"
+      - run:
+          name: build frontend
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$BUILD_FE"
       - run:
           name: reload
-          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$RELOAD_PROD"
+          command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_PROD "$RELOAD"
       - slack/notify:
           color: "#42e2f4"
-          message: Success deploying manggis-api on production environment
+          message: Sukses melakukan deploy pada branch $CIRCLE_BRANCH
+      - slack/status:
+          fail_only: true
+
+  test-prod:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: Install k6 loadimpact
+          command: |
+            sudo apt-get install apt-transport-https -y
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
+            echo "deb https://dl.bintray.com/loadimpact/deb stable main" | sudo tee -a /etc/apt/sources.list
+            sudo apt-get update
+            sudo apt-get install k6
+      - run:
+          name: testing host
+          command: k6 run --vus 10 --duration 10s prod_script.js
+      - slack/notify:
+          color: "#42e2f4"
+          message: Sukses testing https://inv.member.co.id
       - slack/status:
           fail_only: true
 
@@ -138,12 +191,18 @@ workflows:
     - test-dev:
         requires:
           - development
-    # - staging:
-    #     filters:
-    #       branches:
-    #         only: staging
-    # - production:
-    #     filters:
-    #       branches:
-    #         only: master
+    - staging:
+        filters:
+          branches:
+            only: staging
+    - test-stag:
+        requires:
+          - staging
+    - production:
+        filters:
+          branches:
+            only: master
+    - test_prod:
+        requires:
+          - production
 

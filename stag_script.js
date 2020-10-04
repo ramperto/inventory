@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check } from 'k6';
 
 export default function() {
-  let res = http.get('https://stag-inv.member.co.id');
+  let res = http.get('https://stg-inv.member.co.id');
   check(res, {
       'is status 200': (r) => r.status === 200,
   });
