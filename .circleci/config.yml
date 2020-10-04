@@ -7,16 +7,6 @@ jobs:
     docker:
       - image: circleci/node:latest
     steps:
-      - checkout
-      - run: whoami
-      - run:
-          name: Install k6 loadimpact
-          command: |
-            sudo apt-get install apt-transport-https -y
-            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
-            echo "deb https://dl.bintray.com/loadimpact/deb stable main" | sudo tee -a /etc/apt/sources.list
-            sudo apt-get update
-            sudo apt-get install k6
       - run:
           name: which branch
           command: echo ${CIRCLE_BRANCH}
@@ -41,12 +31,32 @@ jobs:
       - run:
           name: reload
           command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_DEV"
+      - slack/notify:
+          color: "#42e2f4"
+          message: Sukses melakukan deploy inventory-dev pada branch $CIRCLE_BRANCH
+      - slack/status:
+          fail_only: true
+
+  test-dev:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run: whoami
+      - run:
+          name: Install k6 loadimpact
+          command: |
+            sudo apt-get install apt-transport-https -y
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
+            echo "deb https://dl.bintray.com/loadimpact/deb stable main" | sudo tee -a /etc/apt/sources.list
+            sudo apt-get update
+            sudo apt-get install k6
       - run:
           name: testing host
           command: k6 run script.js
       - slack/notify:
           color: "#42e2f4"
-          message: Sukses melakukan deploy inventory-dev pada branch $CIRCLE_BRANCH
+          message: Sukses testing https://dev-inv.member.co.id
       - slack/status:
           fail_only: true
 
@@ -126,6 +136,9 @@ workflows:
         filters:
           branches:
             only: development
+    - test-dev:
+        requires:
+          - development
     # - staging:
     #     filters:
     #       branches:
