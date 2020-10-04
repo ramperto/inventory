@@ -30,12 +30,12 @@ app.use((error, req, res, next) => {
 });
 
 // this step for real deployment
-if (process.env.NODE_ENV === 'production') {
+//if (process.env.NODE_ENV === 'production') {
 	app.use(express.static(path.join(__dirname, '/frontend/build')));
 	app.get('*', (req, res) => {
 		res.sendFile(path.join(`${__dirname}/frontend/build/index.html`));
 	});
-}
+//}
 
 // launch our server and connect to database
 const PORT = process.env.PORT || 5000;
