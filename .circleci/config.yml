@@ -33,7 +33,7 @@ jobs:
           command: ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST_DEV "$RELOAD_DEV"
       - slack/notify:
           color: "#42e2f4"
-          message: Sukses melakukan deploy inventory-dev pada branch $CIRCLE_BRANCH
+          message: Sukses melakukan deploy pada branch $CIRCLE_BRANCH
       - slack/status:
           fail_only: true
 
@@ -42,7 +42,6 @@ jobs:
       - image: circleci/node:latest
     steps:
       - checkout
-      - run: whoami
       - run:
           name: Install k6 loadimpact
           command: |
@@ -53,7 +52,7 @@ jobs:
             sudo apt-get install k6
       - run:
           name: testing host
-          command: k6 run script.js
+          command: k6 run dev_script.js
       - slack/notify:
           color: "#42e2f4"
           message: Sukses testing https://dev-inv.member.co.id
