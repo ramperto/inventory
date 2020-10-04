@@ -202,7 +202,7 @@ workflows:
         filters:
           branches:
             only: master
-    - test_prod:
+    - test-prod:
         requires:
           - production
 
