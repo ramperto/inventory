@@ -200,6 +200,9 @@ workflows:
           - staging
     - hold:
         type: approval
+        filters:
+          branches:
+            only: master
     - production:
         filters:
           branches:
