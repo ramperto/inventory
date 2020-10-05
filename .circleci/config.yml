@@ -198,10 +198,17 @@ workflows:
     - test-stag:
         requires:
           - staging
+    - hold:
+        type: approval
+        filters:
+          branches:
+            only: master
     - production:
         filters:
           branches:
             only: master
+        requires:
+          - hold
     - test-prod:
         requires:
           - production
