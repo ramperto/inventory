@@ -17,7 +17,7 @@ export default function Header() {
 		<header className={classes.header}>
 			<div className={classes.wrapper + ' container'}>
 				<div>
-					<h1 className={classes.logo}>INVENTORY</h1>
+					<h1 className={classes.logo}>member.id</h1>
 				</div>
 				<div>
 					{context.isLoggedIn && <span className={classes.username}>Hi Admin</span>}
